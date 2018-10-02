@@ -1,43 +1,35 @@
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+const express = require('express');
+const { ApolloServer } = require('apollo-server-express');
+const { createServer } = require('http');
 
 // GraphQL
+const schema = require('./graph/schema');
+const resolvers = require('./graph/resolvers');
 
-var graphqlHTTP = require('express-graphql');
-var schema = require('./schema');
+// Port Config
+const PORT = 5000;
 
 // Database Setup
-
-var mongoose  = require('mongoose');
-mongoose.connect('mongodb://127.0.0.1:27017/waters',{
-    useNewUrlParser:true
+const mongoose = require('mongoose');
+mongoose.connect('mongodb://127.0.0.1:27017/waters', {
+    useNewUrlParser: true
 });
-var db = mongoose.connection;
-db.on('error', console.error.bind(console,'connection error:'));
-db.once('connection',function(){ 
-    console.log("Connect to Database");
+const db = mongoose.connection;
+db.on('error', console.error.bind(console, 'connection error:'));
+
+// Apollo Server
+const server = new ApolloServer({ 
+    typeDefs:schema, 
+    resolvers,
 });
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+const app = express();
+server.applyMiddleware({ app, path: '/graphql'});
 
-var app = express();
+const httpServer = createServer(app);
+server.installSubscriptionHandlers(httpServer);
 
-app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
-
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
-app.use('/graphql',graphqlHTTP({
-    schema,
-    graphiql: true
-}));
-
-app.listen(3000);
-
-module.exports = app;
+httpServer.listen({ port: PORT }, () => {
+    console.log(`🚀 Server ready at http://localhost:${PORT}${server.graphqlPath}`);
+    console.log(`🚀 Subscriptions ready at ws://localhost:${PORT}${server.subscriptionsPath}`)
+});

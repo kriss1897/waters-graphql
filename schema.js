@@ -1,4 +1,7 @@
 const graphql = require('graphql');
+const {
+    gql
+} = require('apollo-server-express');
 
 // Mongoose Models
 const Customer = require('./models/customer')
@@ -18,30 +21,50 @@ const {
 const CustomerType = new GraphQLObjectType({
     name: "Customer",
     fields: () => ({
-        id: { type: GraphQLID },
-        name: { type: GraphQLString },
-        mobile: { type: GraphQLString },
-        address: { type: GraphQLString },
+        id: {
+            type: GraphQLID
+        },
+        name: {
+            type: GraphQLString
+        },
+        mobile: {
+            type: GraphQLString
+        },
+        address: {
+            type: GraphQLString
+        },
         orders: {
             type: new GraphQLList(OrderType),
-            resolve(parent,args){
-                return Order.find({customerId : parent.id});
-        }
+            resolve(parent, args) {
+                return Order.find({
+                    customerId: parent.id
+                });
             }
+        }
     })
 });
 
 const OrderType = new GraphQLObjectType({
     name: "Order",
     fields: () => ({
-        id: { type: GraphQLID },
-        date: { type: GraphQLString },
-        price: { type: GraphQLFloat },
-        status: { type: GraphQLString },
-        address: { type: GraphQLString },
+        id: {
+            type: GraphQLID
+        },
+        date: {
+            type: GraphQLString
+        },
+        price: {
+            type: GraphQLFloat
+        },
+        status: {
+            type: GraphQLString
+        },
+        address: {
+            type: GraphQLString
+        },
         customer: {
             type: CustomerType,
-            resolve(parent,args){
+            resolve(parent, args) {
                 return Customer.findById(parent.customerId)
             }
         },
@@ -53,27 +76,35 @@ const RootQuery = new GraphQLObjectType({
     fields: {
         customer: {
             type: CustomerType,
-            args: { id: { type: GraphQLID } },
-            resolve(parent,args){
+            args: {
+                id: {
+                    type: GraphQLID
+                }
+            },
+            resolve(parent, args) {
                 return Customer.findById(args.id);
             }
         },
         order: {
             type: OrderType,
-            args: { id: { type: GraphQLID } },
-            resolve(parent,args){
+            args: {
+                id: {
+                    type: GraphQLID
+                }
+            },
+            resolve(parent, args) {
                 return Order.findById(args.id);
             }
         },
         orders: {
             type: new GraphQLList(OrderType),
-            resolve(parent,args){
+            resolve(parent, args) {
                 return Order.find({});
             }
         },
         customers: {
             type: new GraphQLList(CustomerType),
-            resolve(parent, args){
+            resolve(parent, args) {
                 return Customer.find({});
             }
         }
@@ -86,11 +117,17 @@ const Mutation = new GraphQLObjectType({
         addCustomer: {
             type: CustomerType,
             args: {
-                name: { type: GraphQLString },
-                mobile: { type: GraphQLString },
-                address: { type: GraphQLString },
+                name: {
+                    type: GraphQLString
+                },
+                mobile: {
+                    type: GraphQLString
+                },
+                address: {
+                    type: GraphQLString
+                },
             },
-            resolve(parent, args){
+            resolve(parent, args) {
                 let customer = new Customer({
                     name: args.name,
                     mobile: args.mobile,
@@ -102,12 +139,20 @@ const Mutation = new GraphQLObjectType({
         addOrder: {
             type: OrderType,
             args: {
-                date: { type: GraphQLString },
-                customer: { type: GraphQLString },
-                price: { type: GraphQLFloat },
-                address: { type: GraphQLString }
+                date: {
+                    type: GraphQLString
+                },
+                customer: {
+                    type: GraphQLString
+                },
+                price: {
+                    type: GraphQLFloat
+                },
+                address: {
+                    type: GraphQLString
+                }
             },
-            resolve(parent, args){
+            resolve(parent, args) {
                 let order = new Order({
                     date: args.date,
                     customerId: args.customer,
