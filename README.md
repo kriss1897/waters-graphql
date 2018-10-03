@@ -88,3 +88,21 @@ mutation {
   }
 }
 ```
+
+## Realtime Data / Live Data / Subscription
+
+### New Orders
+
+```
+subscription {
+  orderAdded {
+    date
+    address
+    price
+    customer {
+      name
+      mobile
+    }
+  }
+}
+```
