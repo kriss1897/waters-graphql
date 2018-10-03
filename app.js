@@ -21,6 +21,7 @@ db.on('error', console.error.bind(console, 'connection error:'));
 const server = new ApolloServer({ 
     typeDefs:schema, 
     resolvers,
+    introspection: true
 });
 
 const app = express();
