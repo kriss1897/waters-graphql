@@ -11,7 +11,7 @@ const PORT = 5000;
 
 // Database Setup
 const mongoose = require('mongoose');
-mongoose.connect('mongodb://127.0.0.1:27017/waters', {
+mongoose.connect('mongodb://kriss:18secret@ds121603.mlab.com:21603/waters', {
     useNewUrlParser: true
 });
 const db = mongoose.connection;
@@ -29,7 +29,7 @@ server.applyMiddleware({ app, path: '/graphql'});
 const httpServer = createServer(app);
 server.installSubscriptionHandlers(httpServer);
 
-httpServer.listen({ port: PORT }, () => {
+httpServer.listen({ port: process.env.PORT || 4000 }, () => {
     console.log(`🚀 Server ready at http://localhost:${PORT}${server.graphqlPath}`);
     console.log(`🚀 Subscriptions ready at ws://localhost:${PORT}${server.subscriptionsPath}`)
 });
