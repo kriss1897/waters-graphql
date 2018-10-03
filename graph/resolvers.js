@@ -9,6 +9,12 @@ const ORDER_ADDED = 'ORDER_ADDED';
 const pubsub = new PubSub();
 
 const resolvers = {
+    Customer: {
+        orders: (root) => (Order.find({customerId:root.id}))
+    },
+    Order: {
+        customer: (root) => (Customer.findById(root.customerId))
+    },
     Query: {
         customers : () => (Customer.find({})),
         orders: () => (Order.find({})),
@@ -29,6 +35,14 @@ const resolvers = {
             });
             pubsub.publish(ORDER_ADDED,{ orderAdded: args });
             return order.save();
+        },
+        addCustomer(root,args,context){
+            const customer = new Customer({
+                name: args.name,
+                address: args.address,
+                mobile: args.mobile
+            });
+            return customer.save();
         }
     }
 }

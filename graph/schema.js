@@ -29,12 +29,20 @@ type Subscription {
 }
 
 type Mutation {
+    # Adds an order
     addOrder(
         date: String,
         price: Float,
         address: String,
         customerId: String
     ): Order
+
+    # Adds a customer
+    addCustomer(
+        name: String,
+        mobile: String,
+        address: String
+    ): Customer
 }
 `
 
