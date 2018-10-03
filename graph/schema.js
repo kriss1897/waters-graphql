@@ -20,7 +20,9 @@ type Order {
 }
 
 type Query {
+    customer(id: String): Customer,
     customers: [Customer],
+    order(id: String): Order,
     orders: [Order],
 }
 

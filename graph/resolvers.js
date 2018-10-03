@@ -16,6 +16,8 @@ const resolvers = {
         customer: (root) => (Customer.findById(root.customerId))
     },
     Query: {
+        order: (root, args) => (Order.findById(args.id)),
+        customer: (root, args) => (Customer.findById(args.id)),
         customers : () => (Customer.find({})),
         orders: () => (Order.find({})),
     },
