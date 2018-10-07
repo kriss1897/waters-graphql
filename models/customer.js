@@ -1,10 +1,12 @@
-const mongoose = require("mongoose");
-const Schema = mongoose.Schema;
-
-const customerSchema = new Schema({
-    name: String,
-    mobile: String,
-    address: String
-});
-
-module.exports = mongoose.model('Customer', customerSchema)
+'use strict';
+module.exports = (sequelize, DataTypes) => {
+  const Customer = sequelize.define('customer', {
+    name: DataTypes.STRING,
+    address: DataTypes.STRING,
+    mobile: DataTypes.STRING
+  }, {});
+  Customer.associate = function(models) {
+    
+  };
+  return Customer;
+};

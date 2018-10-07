@@ -1,8 +1,8 @@
 const { PubSub } = require('graphql-subscriptions');
 
 // Mongoose Models
-const Customer = require('../models/customer')
-const Order = require('../models/order')
+const Customer = require('../models').customer;
+const Order = require('../models').order;
 
 const ORDER_ADDED = 'ORDER_ADDED';
 
@@ -10,7 +10,7 @@ const pubsub = new PubSub();
 
 const resolvers = {
     Customer: {
-        orders: (root) => (Order.find({customerId:root.id}))
+        orders: (root) => (Order.findAll({where:{ customerId:root.id }}))
     },
     Order: {
         customer: (root) => (Customer.findById(root.customerId))
@@ -18,8 +18,8 @@ const resolvers = {
     Query: {
         order: (root, args) => (Order.findById(args.id)),
         customer: (root, args) => (Customer.findById(args.id)),
-        customers : () => (Customer.find({})),
-        orders: () => (Order.find({})),
+        customers : () => (Customer.findAll()),
+        orders: () => (Order.findAll()),
     },
     Subscription: {
         orderAdded: {
@@ -27,24 +27,29 @@ const resolvers = {
         }
     },
     Mutation: {
-        addOrder(root, args, context){
-            const order = new Order({
+        addOrder: async function(root, args, context){
+            return await Order.create({
                 date: args.date,
                 price: args.price,
                 customerId: args.customerId,
-                status: 'PLACED',
+                status: 0,
                 address: args.address
+            }).then((order,created)=>{
+                pubsub.publish(ORDER_ADDED,{ orderAdded: args });
+                return order;
+            }).then( order => {
+                return order;
             });
-            pubsub.publish(ORDER_ADDED,{ orderAdded: args });
-            return order.save();
         },
-        addCustomer(root,args,context){
-            const customer = new Customer({
+        addCustomer: async function(root,args,context){
+            const customer = await Customer.create({
                 name: args.name,
                 address: args.address,
                 mobile: args.mobile
+            }).then((customer,created)=>{
+                return customer;
             });
-            return customer.save();
+            return customer;
         }
     }
 }

@@ -1,12 +1,14 @@
-const mongoose = require("mongoose");
-const Schema = mongoose.Schema;
-
-const orderSchema = new Schema({
-    date: String,
-    price: Number,
-    customerId: String,
-    status: String,
-    address: String
-});
-
-module.exports = mongoose.model('Order', orderSchema)
+'use strict';
+module.exports = (sequelize, DataTypes) => {
+  const Order = sequelize.define('order', {
+    customerId: DataTypes.INTEGER,
+    date: DataTypes.STRING,
+    price: DataTypes.INTEGER,
+    address: DataTypes.STRING,
+    status: DataTypes.INTEGER
+  }, {});
+  Order.associate = function(models) {
+    
+  };
+  return Order;
+};
